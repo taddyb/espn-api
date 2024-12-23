@@ -8,7 +8,7 @@ class PowerRankingTeam:
     name: str
     team_id: int
     ranking: float
-    weekly_records: List[Dict[str, int]]  # Weekly win-loss records
+    weekly_records: List[Dict[str, int]]
     scores: List[float]
     actual_record: Dict[str, int]
     total_points: float
@@ -23,22 +23,18 @@ def get_weekly_records(all_teams: List, week: int) -> List[Dict]:
     """Calculate weekly records for each team based on scoring rank"""
     weekly_records = []
     
-    # For each week through week 14
     for week_idx in range(week):
-        # Get all scores for the week
         week_scores = []
         for team in all_teams:
             if week_idx < len(team.scores):
                 week_scores.append((team.team_id, team.scores[week_idx]))
                 
-        # Sort scores from highest to lowest
         week_scores.sort(key=lambda x: x[1], reverse=True)
         
-        # Calculate records for each team
         week_records = {}
         for rank, (team_id, score) in enumerate(week_scores):
-            wins = len(week_scores) - (rank + 1)  # Teams outscored
-            losses = rank  # Teams that outscored you
+            wins = len(week_scores) - (rank + 1)
+            losses = rank
             week_records[team_id] = {
                 'wins': wins,
                 'losses': losses,
@@ -59,7 +55,6 @@ def calculate_power_rankings(league, week: Optional[int] = None) -> List[PowerRa
 
     teams = sorted(league.teams, key=lambda x: x.team_id)
     
-    # Get weekly records for all teams
     weekly_records = get_weekly_records(teams, week)
     
     power_rankings = []
@@ -71,7 +66,6 @@ def calculate_power_rankings(league, week: Optional[int] = None) -> List[PowerRa
         team_weekly_records = []
         regular_season_scores = team.scores[:week]
         
-        # Calculate totals through week 14
         for week_idx, week_record in enumerate(weekly_records):
             if week_idx >= len(regular_season_scores):
                 continue
@@ -82,7 +76,6 @@ def calculate_power_rankings(league, week: Optional[int] = None) -> List[PowerRa
                 total_wins += record['wins']
                 total_losses += record['losses']
                 
-                # Calculate median wins
                 scores = [r['score'] for r in week_record.values()]
                 if record['score'] > median(scores):
                     median_wins += 1
@@ -115,18 +108,10 @@ def calculate_power_rankings(league, week: Optional[int] = None) -> List[PowerRa
 
     return sorted(power_rankings, key=lambda x: x.ranking, reverse=True)
 
-from typing import List, Dict, Optional
-from dataclasses import dataclass
-from statistics import median
-from espn_api.football import League
-
-# [Previous code remains the same until print_power_rankings_table function]
-
 def print_power_rankings_table(rankings: List[PowerRankingTeam], week: int):
     """Print formatted power rankings tables"""
     print(f"\nRegular Season Power Rankings through Week {week}\n")
     
-    # Main rankings table based on power rankings
     header = "{:<4} {:<25} {:<10} {:<15} {:<15} {:<15} {:<15}".format(
         "Rank", "Team", "Rating", "True Record", "vs Median", "Combined", "Actual Record"
     )
@@ -145,7 +130,6 @@ def print_power_rankings_table(rankings: List[PowerRankingTeam], week: int):
             (f"-{team.actual_record['ties']}" if team.actual_record['ties'] > 0 else "")
         ))
     
-    # Points Per Game Rankings Table
     print("\nPoints Per Game Rankings:\n")
     ppg_rankings = sorted(rankings, key=lambda x: x.total_points / len(x.scores), reverse=True)
     
@@ -165,7 +149,6 @@ def print_power_rankings_table(rankings: List[PowerRankingTeam], week: int):
             len(team.scores)
         ))
     
-    # Weekly Scoring Records Table
     print("\nWeekly Scoring Records:\n")
     print("{:<25}".format("Team"), end="")
     for w in range(min(week, 14)):
@@ -201,12 +184,12 @@ def print_power_rankings_table(rankings: List[PowerRankingTeam], week: int):
         print(f"      Actual: {actual_win_pct:.3f}")
         print()
 
-# [Rest of the code remains the same]
-
 def main():
     league = League(
         league_id=123456,
         year=2021,
+        espn_s2="your_espn_s2",
+        swid="your_swid"
     )
 
     rankings = calculate_power_rankings(league)
