@@ -129,7 +129,7 @@ def print_power_rankings_table(rankings: List[PowerRankingTeam], week: int):
         print(f"   Power Rating: {team.ranking:.3f}")
         print(f"   Total Points: {team.total_points:.2f}")
         print(f"   Points Per Game: {team.total_points / len(team.scores):.2f}")
-        print(f"   True Record: {team.total_wins}-{team.total_losses}")z
+        print(f"   True Record: {team.total_wins}-{team.total_losses}")
         print()
 
 def add_power_rankings_method(League):
