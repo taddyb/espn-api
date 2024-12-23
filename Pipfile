@@ -1,0 +1,12 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+espn-api = {editable = true, file = "file:///Users/taddbindas/projects/espn-api"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
